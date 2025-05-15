@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-// import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 
 import {
     Navbar,
@@ -51,15 +51,14 @@ export function NavbarProvider({ children }: NavbarProviderProps) {
                         <Button className="shadow-2xl rounded-full">
                             <span>Start Framing</span>
                         </Button>
-                        <Button variant="secondary">Login</Button>
-                        {/* <SignedIn>
+                        <SignedIn>
                             <UserButton />
                         </SignedIn>
                         <SignedOut>
                             <Button variant="secondary" asChild>
                                 <SignInButton mode="modal">Login</SignInButton>
                             </Button>
-                        </SignedOut> */}
+                        </SignedOut>
                     </div>
                 </NavBody>
 

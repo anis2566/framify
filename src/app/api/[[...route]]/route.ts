@@ -4,6 +4,7 @@ import { createRouteHandler } from 'uploadthing/server';
 
 import { uploadRouter } from "@/lib/uploadthing";
 import { frameRouter } from "@/server/frame/route";
+import { webhookRouter } from "@/server/webhooks/route";
 
 const handlers = createRouteHandler({
     router: uploadRouter,
@@ -13,6 +14,7 @@ const handlers = createRouteHandler({
 const app = new Hono().basePath('/api')
     .all("/uploadthing", (c) => handlers(c.req.raw))
     .route("/frames", frameRouter)
+    .route("/webhooks", webhookRouter)
 
 export const GET = handle(app)
 export const POST = handle(app)
