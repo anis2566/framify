@@ -43,7 +43,7 @@ export const Workflow = () => {
                 </div>
 
                 <Button asChild variant="default" className="mt-10 mx-auto flex w-full max-w-fit mx-auto">
-                    <Link href="/frames">Start Framing</Link>
+                    <Link href="/frames/build">Start Framing</Link>
                 </Button>
             </div>
         </DotBackground>

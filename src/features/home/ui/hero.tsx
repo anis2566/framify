@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { ColourfulText } from "@/components/colourful-text";
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +31,11 @@ export function Hero() {
                         <Button variant="outline">
                             Explore Frames
                         </Button>
-                        <Button className="shadow-2xl rounded-full">
-                            <span>Start Framing</span>
-                            <ArrowRight className="animate-bounce w-6 h-4" />
+                        <Button className="shadow-2xl rounded-full" asChild>
+                            <Link href="/frames/build">
+                                <span>Start Framing</span>
+                                <ArrowRight className="animate-bounce w-6 h-4" />
+                            </Link>
                         </Button>
                     </div>
 

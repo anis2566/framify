@@ -7,21 +7,18 @@ import { SignatureFrames } from "@/features/home/ui/signature-frames";
 import { Testimonials } from "@/features/home/ui/testimonials";
 import { Trial } from "@/features/home/ui/trial";
 import { Workflow } from "@/features/home/ui/workflow";
-import { NavbarProvider } from "@/providers/nav-provider";
 
 const Home = () => {
   return (
     <TracingBeam>
-      <NavbarProvider>
-        <Hero />
-        <Trial />
-        <SignatureFrames />
-        <Workflow />
-        <PopularFrames />
-        <Testimonials />
-        <Newsletter />
-        <Footer />
-      </NavbarProvider>
+      <Hero />
+      <Trial />
+      <SignatureFrames />
+      <Workflow />
+      <PopularFrames />
+      <Testimonials />
+      <Newsletter />
+      <Footer />
     </TracingBeam>
   )
 };

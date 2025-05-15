@@ -21,18 +21,22 @@ model User {
   status        String  @default("Pending")
   phone         String?
 
+  orders Order[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Frame {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
   imageUrl    String
-  stock       Int            @default(0)
-  totalSold   Int            @default(0)
-  variants    FrameVariant[]
+  stock       Int    @default(0)
+  totalSold   Int    @default(0)
+
+  variants FrameVariant[]
+  orders   Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -48,6 +52,61 @@ model FrameVariant {
   frameId String @db.ObjectId
   frame   Frame  @relation(fields: [frameId], references: [id], onDelete: Cascade)
 
+  orders Order[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Order {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  quantity       Int
+  shippingCharge Int
+  total          Int    @default(130)
+  status         String @default("Pending")
+
+  name    String
+  phone   String
+  address String
+  city    String
+
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  frameId String @db.ObjectId
+  frame   Frame  @relation(fields: [frameId], references: [id], onDelete: Cascade)
+
+  variantId String       @db.ObjectId
+  variant   FrameVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model City {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  cityId   Int    @unique
+  cityName String
+
+  zones Zone[]
+}
+
+model Zone {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  zoneId   Int    @unique
+  zoneName String
+
+  cityId String @db.ObjectId
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  areas Area[]
+}
+
+model Area {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  areaId   Int    @unique
+  areaName String
+
+  zoneId String @db.ObjectId
+  zone   Zone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
 }

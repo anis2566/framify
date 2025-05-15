@@ -1,87 +1,134 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { UploadButton } from "@/components/uploadthing";
-import { useStorage } from "@/hooks/use-storage";
-import { Trash } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
+import { genUploader } from "uploadthing/client";
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Image, Upload, Loader2 } from "lucide-react";
+
+import { uploadRouter } from "@/lib/uploadthing";
 
 export const Trial = () => {
-    // HOOKS
-    const { fileUrl, setFileUrl, removeFileUrl } = useStorage();
+    const [isDragging, setIsDragging] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const router = useRouter();
+    const { uploadFiles } = genUploader<typeof uploadRouter>();
+
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const file = e.dataTransfer.files[0];
+            processFile(file);
+        }
+    }, []);
+
+    const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            processFile(file);
+        }
+    }, []);
+
+    const processFile = async (file: File) => {
+        if (!file.type.match("image.*")) {
+            alert("Please select an image file");
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            const response = await uploadFiles("imageUploader", {
+                files: [file],
+            });
+
+            if (response[0].ufsUrl) {
+                router.push(`/frames/build?photo=${response[0].ufsUrl}`);
+            }
+        } catch (err) {
+            console.error("Upload error:", err);
+            alert("Something went wrong while uploading");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
-            <h1 className="text-4xl font-bold tracking-wide text-center capitalize leading-tight text-gray-700 dark:text-white">Give it a try</h1>
+            <div>
+                <h1 className="text-4xl font-bold tracking-wide text-center capitalize leading-tight text-gray-700 dark:text-white">
+                    Give it a try
+                </h1>
+                <p className="text-sm text-center text-muted-foreground">
+                    Upload your photo and see how it looks in a frame. If you like it, you can place an order.
+                </p>
+            </div>
 
-            <div className="flex items-center justify-center gap-8">
-                {
-                    fileUrl ? (
-                        <div className="z-50 w-[200px] h-[200px] border border-neutral-200 dark:border-neutral-800 rounded-md relative">
-                            <Image
-                                src={fileUrl}
-                                alt="File"
-                                width={200}
-                                height={200}
-                                className="object-contain w-full h-full"
-                                unoptimized
-                            />
-                            <Button variant="secondary" size="icon" className="absolute top-0 right-0">
-                                <Trash className="h-4 w-4 text-red-600" />
-                            </Button>
-                        </div>
-                    ) : (
-                        <UploadButton
-                            endpoint="imageUploader"
-                            appearance={{
-                                container: "flex flex-col items-center gap-2 p-4 border border-border rounded-lg bg-muted text-foreground w-full",
-                                button:
-                                    "bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors text-sm font-medium",
-                                allowedContent: "text-xs text-muted-foreground",
-                            }}
-                            onClientUploadComplete={(res) => {
-                                setFileUrl(res?.[0]?.ufsUrl);
-                                toast.success("Image uploaded");
-                            }}
-                            onUploadError={() => {
-                                toast.error("Image upload failed");
-                            }}
+            <div
+                className={`border-2 border-dashed rounded-lg p-12 text-center transition-all duration-200 ${isDragging
+                    ? "border-indigo-500 bg-indigo-50"
+                    : "border-gray-300 hover:border-gray-400"
+                    }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            >
+                <div className="space-y-4">
+                    <div className="mx-auto h-16 w-16 text-gray-400 flex items-center justify-center rounded-full bg-gray-100">
+                        {isLoading ? (
+                            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                        ) : isDragging ? (
+                            <Image className="h-8 w-8" />
+                        ) : (
+                            <Upload className="h-8 w-8" />
+                        )}
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-medium">
+                            {isLoading
+                                ? "Uploading photo..."
+                                : isDragging
+                                    ? "Drop your photo here"
+                                    : "Upload your photo"}
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                            Drop your image here, or click to select a file
+                        </p>
+                    </div>
+
+                    <label className="inline-block">
+                        <span
+                            className={`px-4 py-2 rounded bg-indigo-600 text-white text-sm font-medium transition-colors ${isLoading
+                                ? "opacity-50 cursor-not-allowed"
+                                : "hover:bg-indigo-700 cursor-pointer"
+                                }`}
+                        >
+                            {isLoading ? "Uploading..." : "Select File"}
+                        </span>
+                        <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileInput}
+                            disabled={isLoading}
                         />
-                    )
-                }
+                    </label>
 
-                <Image
-                    src="/arrow.png"
-                    alt="Frame 1"
-                    width={80}
-                    height={80}
-                    className="object-contain text-red-500 z-50"
-                />
-
-                <div className="w-[200px] h-[200px] z-50 relative">
-                    <Image
-                        src="/frame.png"
-                        alt="Frame 1"
-                        fill
-                        className="object-contain rounded-md"
-                    />
-                    {
-                        fileUrl && (
-                            <div className="absolute inset-0 w-full h-full z-50 flex items-center justify-center">
-                                <Image
-                                    src={fileUrl}
-                                    alt="Frame 1"
-                                    width={100}
-                                    height={100}
-                                    className="object-contain rounded-md"
-                                    unoptimized
-                                />
-                            </div>
-                        )
-                    }
+                    <p className="text-xs text-gray-500 mt-2">Supports JPG, PNG up to 10MB</p>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

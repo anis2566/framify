@@ -177,6 +177,20 @@ export const frameRouter = new Hono()
 
     )
     .get(
+        "/build",
+        async (c) => {
+            const frames = await db.frame.findMany({
+                include: {
+                    variants: true,
+                },
+            });
+
+            return c.json({
+                frames,
+            }, 200)
+        }
+    )
+    .get(
         "/",
         zValidator(
             "query",

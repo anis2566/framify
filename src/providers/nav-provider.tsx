@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import Link from "next/link";
 
 import {
     Navbar,
@@ -16,6 +17,16 @@ import {
 } from "@/components/resizable-navbar";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import { ShoppingCart } from "lucide-react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import { cn } from "@/lib/utils";
+import { useCart } from "@/hooks/use-cart";
 
 interface NavbarProviderProps {
     children: React.ReactNode;
@@ -38,6 +49,7 @@ export function NavbarProvider({ children }: NavbarProviderProps) {
     ];
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { cart } = useCart();
 
     return (
         <div className="relative w-full z-50">
@@ -48,9 +60,21 @@ export function NavbarProvider({ children }: NavbarProviderProps) {
                     <NavItems items={navItems} className="flex-1" />
                     <div className="flex items-center gap-3 z-50">
                         <ModeToggle />
-                        <Button className="shadow-2xl rounded-full">
-                            <span>Start Framing</span>
-                        </Button>
+                        <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Link href="/cart" className="relative mr-3 md:mr-4">
+                                        <ShoppingCart className="w-5 h-5" />
+                                        <div className={cn("absolute -top-2 -right-4 rounded-full w-5 h-5 flex items-center justify-center text-xs text-white bg-red-500", cart.length === 0 && "hidden")}>
+                                            {cart.length}
+                                        </div>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>View your cart</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                         <SignedIn>
                             <UserButton />
                         </SignedIn>

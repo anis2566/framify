@@ -150,6 +150,43 @@ exports.Prisma.FrameVariantScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  shippingCharge: 'shippingCharge',
+  total: 'total',
+  status: 'status',
+  name: 'name',
+  phone: 'phone',
+  address: 'address',
+  city: 'city',
+  userId: 'userId',
+  frameId: 'frameId',
+  variantId: 'variantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CityScalarFieldEnum = {
+  id: 'id',
+  cityId: 'cityId',
+  cityName: 'cityName'
+};
+
+exports.Prisma.ZoneScalarFieldEnum = {
+  id: 'id',
+  zoneId: 'zoneId',
+  zoneName: 'zoneName',
+  cityId: 'cityId'
+};
+
+exports.Prisma.AreaScalarFieldEnum = {
+  id: 'id',
+  areaId: 'areaId',
+  areaName: 'areaName',
+  zoneId: 'zoneId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -164,7 +201,11 @@ exports.Prisma.QueryMode = {
 exports.Prisma.ModelName = {
   User: 'User',
   Frame: 'Frame',
-  FrameVariant: 'FrameVariant'
+  FrameVariant: 'FrameVariant',
+  Order: 'Order',
+  City: 'City',
+  Zone: 'Zone',
+  Area: 'Area'
 };
 
 /**
